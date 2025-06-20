@@ -1,0 +1,34 @@
+name: Daily Commit Action
+
+on:
+  schedule:
+    # Runs daily at 2:30 PM UTC (specific hours/minutes, no wildcards)
+    - cron: '30 14 * * *'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Step with email 22f3002460@ds.study.iitm.ac.in
+        run: echo "Running step for email 22f3002460@ds.study.iitm.ac.in"
+
+      - name: Create daily update file
+        run: |
+          # Create a timestamp file
+          echo "Daily update - $(date)" > daily-update-$(date +%Y-%m-%d).txt
+          echo "Workflow run at: $(date)" >> daily-update-$(date +%Y-%m-%d).txt
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Daily automated commit - $(date +%Y-%m-%d)" || exit 0
+          git push
